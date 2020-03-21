@@ -15,5 +15,12 @@
   "bugs": {
     "url": "https://github.com/vitaliykreminskiy/saved-images-bot/issues"
   },
-  "homepage": "https://github.com/vitaliykreminskiy/saved-images-bot#readme"
+  "homepage": "https://github.com/vitaliykreminskiy/saved-images-bot#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "telegraf": "^3.36.0",
+    "telegraf-keyboard": "^1.1.2",
+    "telegraf-session-local": "^1.0.2"
+  }
 }

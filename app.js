@@ -1,7 +1,12 @@
-const express = require('express');
-const app = express();
-const port = 80;
+const dotenv = require('dotenv').config();
+const Telegraf = require('telegraf');
+const Keyboard = require('telegraf-keyboard');
+const LocalSession = require('telegraf-session-local')
 
-app.get('/', (req, res) => res.send('Hello World!'));
+const bot = new Telegraf(process.env.BOT_TOKEN);
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+bot.command('oldschool', (ctx) => ctx.reply('Hello'));
+bot.command('modern', (ctx) => ctx.reply('Yo'));
+bot.command('hipster', (ctx) => ctx.reply('λ'));
+
+bot.startPolling();

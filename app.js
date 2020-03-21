@@ -11,7 +11,8 @@ const getRandomNumber = (min, max) =>  {
 }
 
 bot.command('random', (ctx) => {
-    const endpoint = 'http://api.vk.com/method/photos.get?access_token=' + process.env.VK_TOKEN + '&album_id=saved&v=5.103';
+    const endpoint = 'http://api.vk.com/method/photos.getAll?access_token=' + process.env.VK_TOKEN + '&album_id=saved&count=1&v=5.103';
+
     request (
         {
             method: 'GET',
@@ -20,8 +21,19 @@ bot.command('random', (ctx) => {
             let decodedResponse = JSON.parse(body);
             let picturesCount = decodedResponse.response.count;
             let randomNumber = getRandomNumber(1, picturesCount);
-            let randomPhotoUrl = decodedResponse.response.items[randomNumber].sizes[7].url;
-            ctx.reply(randomPhotoUrl);
+
+            const photoEndpoint = 'http://api.vk.com/method/photos.getAll?access_token=' + process.env.VK_TOKEN + '&album_id=saved&count=1&offset' + (randomNumber - 1) + 'v=5.103';
+
+            request (
+                {
+                    method: 'GET',
+                    uri: endpoint
+                }, (error_, response_, body_) => {
+                    let decodedBody_ = JSON.parse(body);
+                    let randomPhotoUrl = decodedResponse.response.items[0].sizes[7].url;
+                    ctx.reply(randomPhotoUrl);
+                }
+            )
         }
     )
 });

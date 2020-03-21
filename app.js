@@ -14,7 +14,7 @@ bot.command('random', (ctx) => {
             uri: endpoint
         }, (error, response, body) => {
             let decodedResponse = JSON.parse(body);
-            ctx.reply(decodedResponse.response.count);
+            ctx.reply(body);
         }
     )
 });

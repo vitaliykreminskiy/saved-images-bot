@@ -31,7 +31,7 @@ const remove = (subscriber) => {
 
     const foundIndex = currentSubscribers.indexOf(subscriber);
 
-    if (!foundIndex) {
+    if (foundIndex == -1) {
         return;
     }
 

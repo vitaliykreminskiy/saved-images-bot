@@ -11,6 +11,9 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
     "cron": "^1.8.2",
-    "simple-json-db": "^1.2.2"
+    "dotenv": "^8.2.0",
+    "request": "^2.88.2",
+    "simple-json-db": "^1.2.2",
+    "telegraf": "^3.36.0"
   }
 }

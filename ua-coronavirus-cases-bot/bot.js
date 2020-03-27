@@ -1,30 +1,35 @@
 const dotenv = require('dotenv').config();
-var CronJob = require('cron').CronJob;
+let CronJob = require('cron').CronJob;
 const request = require('request');
 const Telegraf = require('telegraf');
 const Telegram = require('telegraf/telegram');
 const cheerio = require('cheerio');
+
+const subscribers = require('./helpers/subscribersHelper')
 
 const bot = new Telegraf(process.env.CV_BOT_TOKEN);
 const client = new Telegram(process.env.CV_BOT_TOKEN);
 
 const covidEndpoint = 'https://covid19.com.ua/';
 
-let subscribers = [];
 let currentInfectedNumber = 0;
 
-const updatesCheckerJob = new CronJob('* * */3 * * *', () => {
-  console.log('job triggered');
+const updatesCheckerJob = new CronJob('0 0 * * * *', () => {
   requestCasesNumber((casesNumber) => {
     casesNumber = casesNumber.trim();
     if (currentInfectedNumber != casesNumber) {
-      subscribers.forEach((subscriber) => {
-        client.sendMessage(subscriber, 'Current number of Coronavirus cases in Ukraine - ' + casesNumber);
-      })
+      updateSubscribersAboutNewCases(casesNumber);
       currentInfectedNumber = casesNumber;
     }
   })
 });
+
+const updateSubscribersAboutNewCases = (casesNumber) => {
+  const subscribersList = subscribers.get();
+  subscribersList.forEach((subscriber) => {
+    client.sendMessage(subscriber, 'Current number of Coronavirus cases in Ukraine - ' + casesNumber);
+  })
+}
 
 const requestCasesNumber = (callback) => {
   request({
@@ -37,31 +42,46 @@ const requestCasesNumber = (callback) => {
     }
 
     const $ = cheerio.load(body);
-    const casesNumber = $('.fields:nth-child(1) .one-field:nth-child(3) .field-value').text();
+    const casesNumber = $('.fields:nth-child(1) .one-field:nth-child(3) .field-value').text().trim();
     callback(casesNumber);
   })
 }
 
 bot.command('cases', (ctx) => {
   requestCasesNumber((casesNumber) => {
-    ctx.reply(casesNumber);
+    casesNumber = casesNumber.trim();
+    if (casesNumber !== currentInfectedNumber) {
+      updateSubscribersAboutNewCases(casesNumber);
+      currentInfectedNumber = casesNumber;
+
+      return;
+    }
+
+    ctx.reply('Current number of Coronavirus cases in Ukraine - ' + casesNumber);
   })
 });
 
 bot.command('subscribe', (ctx) => {
   const senderChatId = ctx.update.message.chat.id;
-  const foundIndex = subscribers.indexOf(senderChatId);
+  const subscribed = subscribers.has(senderChatId);
 
-  if (foundIndex !== -1) {
-    subscribers.splice(foundIndex, 1);
+  if (subscribed) {
+    subscribers.remove(senderChatId);
     client.sendMessage(senderChatId, 'You have unsubscribed from updates');
 
     return;
   }
 
-  subscribers.push(senderChatId);
+  subscribers.add(senderChatId);
   client.sendMessage(senderChatId, 'You have subscribed for updates');
 });
 
+const init = () => {
+  requestCasesNumber((casesNumber) => {
+    currentInfectedNumber = casesNumber;
+  })
+}
+
+init();
 updatesCheckerJob.start();
 bot.startPolling();

@@ -1,2 +1,3 @@
 node_modules
 .env
+ua-coronavirus-cases-bot/storage/db.json

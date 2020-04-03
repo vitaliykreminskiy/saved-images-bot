@@ -76,6 +76,21 @@ bot.command('subscribe', (ctx) => {
   client.sendMessage(senderChatId, 'You have subscribed for updates');
 });
 
+bot.on('inline_query', async ({ inlineQuery, answerInlineQuery }) => {
+  const response = {       
+    type: 'article',
+    id: 1,
+    title: 'Coronavirus in Ukraine',
+    description: 'Current number of infected people is ' + currentInfectedNumber,
+    thumb_url: 'https://i.ibb.co/ngdCDrh/corovavirus.png',
+    input_message_content: {
+      message_text: 'Current number of people infected with Coronavirus in Ukraine is ' + currentInfectedNumber
+    }
+  }
+
+  return answerInlineQuery([response]);
+})
+
 const init = () => {
   requestCasesNumber((casesNumber) => {
     currentInfectedNumber = casesNumber;

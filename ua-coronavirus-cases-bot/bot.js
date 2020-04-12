@@ -5,7 +5,8 @@ const Telegraf = require('telegraf');
 const Telegram = require('telegraf/telegram');
 const cheerio = require('cheerio');
 
-const subscribers = require('./helpers/subscribersHelper')
+const subscribers = require('./helpers/subscribersHelper');
+const history = require('./helpers/historyHelper');
 
 const bot = new Telegraf(process.env.CV_BOT_TOKEN);
 const client = new Telegram(process.env.CV_BOT_TOKEN);
@@ -25,6 +26,7 @@ const updatesCheckerJob = new CronJob('0 0 * * * *', () => {
 });
 
 const updateSubscribersAboutNewCases = (casesNumber) => {
+  history.append(casesNumber);
   const subscribersList = subscribers.get();
   subscribersList.forEach((subscriber) => {
     client.sendMessage(subscriber, 'Current number of Coronavirus cases in Ukraine - ' + casesNumber);
@@ -75,6 +77,7 @@ bot.command('subscribe', (ctx) => {
   subscribers.add(senderChatId);
   client.sendMessage(senderChatId, 'You have subscribed for updates');
 });
+
 
 bot.on('inline_query', async ({ inlineQuery, answerInlineQuery }) => {
   const response = {       

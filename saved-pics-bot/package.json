@@ -18,7 +18,7 @@
   "homepage": "https://github.com/vitaliykreminskiy/saved-images-bot#readme",
   "dependencies": {
     "dotenv": "^8.2.0",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "request": "^2.88.2",
     "telegraf": "^3.36.0",
     "telegraf-keyboard": "^1.1.2",
